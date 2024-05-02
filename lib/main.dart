@@ -50,12 +50,12 @@ class _HomePageState extends State<HomePage> {
   Future<void> startRecord({required String fileName}) async {
     Directory? tempDir = await getDownloadsDirectory();
     String? tempPath = tempDir!.path;
-    print(tempPath);
+    debugPrint(tempPath);
     try {
       var startResponse = await screenRecorder?.startRecordScreen(
         fileName: "Eren",
         dirPathToSave: tempPath,
-        audioEnable: true, width: 100, height: 100,
+        audioEnable: true, width: 1080, height: 2400,
       );
       setState(() {
         _response = startResponse;
