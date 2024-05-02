@@ -12,7 +12,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -47,23 +47,26 @@ class _HomePageState extends State<HomePage> {
     screenRecorder = EdScreenRecorder();
   }
 
-  Future<void> startRecord({required String fileName}) async {
-    Directory? tempDir = await getDownloadsDirectory();
-    String? tempPath = tempDir!.path;
-    debugPrint(tempPath);
+  Future<void> startRecord({required String fileName, required int width, required int height}) async {
+    debugPrint('I have been Clicked');
+    Directory? tempDir = await getApplicationDocumentsDirectory();
+    String? tempPath = tempDir.path;
     try {
       var startResponse = await screenRecorder?.startRecordScreen(
+
         fileName: "Eren",
+        //Optional. It will save the video there when you give the file path with whatever you want.
+        //If you leave it blank, the Android operating system will save it to the gallery.
         dirPathToSave: tempPath,
-        audioEnable: true, width: 1080, height: 2400,
+        audioEnable: true,
+        width: width,
+        height: height,
       );
       setState(() {
         _response = startResponse;
       });
     } on PlatformException {
-      kDebugMode
-          ? debugPrint("Error: An error occurred while starting the recording!")
-          : null;
+      kDebugMode ? debugPrint("Error: An error occurred while starting the recording!") : null;
     }
   }
 
@@ -74,9 +77,7 @@ class _HomePageState extends State<HomePage> {
         _response = stopResponse;
       });
     } on PlatformException {
-      kDebugMode
-          ? debugPrint("Error: An error occurred while stopping recording.")
-          : null;
+      kDebugMode ? debugPrint("Error: An error occurred while stopping recording.") : null;
     }
   }
 
@@ -84,9 +85,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await screenRecorder?.pauseRecord();
     } on PlatformException {
-      kDebugMode
-          ? debugPrint("Error: An error occurred while pause recording.")
-          : null;
+      kDebugMode ? debugPrint("Error: An error occurred while pause recording.") : null;
     }
   }
 
@@ -94,9 +93,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await screenRecorder?.resumeRecord();
     } on PlatformException {
-      kDebugMode
-          ? debugPrint("Error: An error occurred while resume recording.")
-          : null;
+      kDebugMode ? debugPrint("Error: An error occurred while resume recording.") : null;
     }
   }
 
@@ -110,26 +107,25 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("File: ${(_response?.file)?.path}"),
-            Text("Status: ${(_response?.success).toString()}"),
+            Text("File: ${_response?.file.path}"),
+            Text("Status: ${_response?.success.toString()}"),
             Text("Event: ${_response?.eventName}"),
-            Text("Progress: ${(_response?.isProgress).toString()}"),
+            Text("Progress: ${_response?.isProgress.toString()}"),
             Text("Message: ${_response?.message}"),
             Text("Video Hash: ${_response?.videoHash}"),
             Text("Start Date: ${(_response?.startDate).toString()}"),
             Text("End Date: ${(_response?.endDate).toString()}"),
             ElevatedButton(
-                onPressed: () => startRecord(fileName: "eren"),
-                child: const Text('START RECORD')),
-            ElevatedButton(
-                onPressed: () => resumeRecord(),
-                child: const Text('RESUME RECORD')),
-            ElevatedButton(
-                onPressed: () => pauseRecord(),
-                child: const Text('PAUSE RECORD')),
-            ElevatedButton(
-                onPressed: () => stopRecord(),
-                child: const Text('STOP RECORD')),
+              onPressed: () => startRecord(
+                fileName: "eren",
+                width: context.size?.width.toInt() ?? 0,
+                height: context.size?.height.toInt() ?? 0,
+              ),
+              child: const Text('START RECORD'),
+            ),
+            ElevatedButton(onPressed: () => resumeRecord(), child: const Text('RESUME RECORD')),
+            ElevatedButton(onPressed: () => pauseRecord(), child: const Text('PAUSE RECORD')),
+            ElevatedButton(onPressed: () => stopRecord(), child: const Text('STOP RECORD')),
           ],
         ),
       ),
